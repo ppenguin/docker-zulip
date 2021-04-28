@@ -149,7 +149,8 @@ tar -xf zulip-server-docker.tar.gz \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # apparently necessary if using a "normal" external pgsql server to avoid errors during init
-# cp -r /build/tsearch_data /usr/share/postgresql/13/
+mkdir -p /usr/share/postgresql/12/
+cp -r /build/tsearch_data /usr/share/postgresql/12/
 cp /buildahdir/entrypoint.sh /sbin/entrypoint.sh
 cp /buildahdir/certbot-deploy-hook /sbin/certbot-deploy-hook
 ln -sf /home/zulip/deployments/next /root/zulip
