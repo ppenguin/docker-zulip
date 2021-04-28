@@ -131,6 +131,20 @@ nginxConfiguration() {
     sed -i "s/proxy_buffering .*/proxy_buffering $NGINX_PROXY_BUFFERING;/g" /etc/nginx/zulip-include/proxy_longpolling
     echo "Nginx configuration succeeded."
 }
+additionalPuppetConfiguration() {
+    echo "Executing additional puppet configuration ..."
+    if [ "$QUEUE_WORKERS_MULTIPROCESS" == "True" ] || [ "$QUEUE_WORKERS_MULTIPROCESS" == "true" ]; then
+        echo "Setting queue workers to run in multiprocess mode ..."
+        crudini --set /etc/zulip/zulip.conf application_server queue_workers_multiprocess true
+    elif [ "$QUEUE_WORKERS_MULTIPROCESS" == "False" ] || [ "$QUEUE_WORKERS_MULTIPROCESS" == "false" ]; then
+        echo "Setting queue workers to run in multithreaded mode ..."
+        crudini --set /etc/zulip/zulip.conf application_server queue_workers_multiprocess false
+    else
+        echo "No additional puppet configuration executed."
+        return 0
+    fi
+    /home/zulip/deployments/current/scripts/zulip-puppet-apply -f
+}
 configureCerts() {
     case "$SSL_CERTIFICATE_GENERATION" in
         self-signed)
@@ -215,6 +229,7 @@ secretsConfiguration() {
 databaseConfiguration() {
     echo "Setting database configuration ..."
     setConfigurationValue "REMOTE_POSTGRES_HOST" "$DB_HOST" "$SETTINGS_PY" "string"
+    setConfigurationValue "REMOTE_POSTGRES_PORT" "$DB_HOST_PORT" "$SETTINGS_PY" "string"
     setConfigurationValue "REMOTE_POSTGRES_SSLMODE" "$REMOTE_POSTGRES_SSLMODE" "$SETTINGS_PY" "string"
     # The password will be set in secretsConfiguration
     echo "Database configuration succeeded."
@@ -293,6 +308,7 @@ initialConfiguration() {
     prepareDirectories
     nginxConfiguration
     configureCerts
+    additionalPuppetConfiguration
     if [ "$MANUAL_CONFIGURATION" = "False" ] || [ "$MANUAL_CONFIGURATION" = "false" ]; then
         # Start with the settings template file.
         cp -a /home/zulip/deployments/current/zproject/prod_settings_template.py "$SETTINGS_PY"

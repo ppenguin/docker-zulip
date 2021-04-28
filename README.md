@@ -6,10 +6,10 @@ This is a container image for running [Zulip](https://zulip.com)
 ([GitHub](https://github.com/zulip/zulip)) in
 [production][prod-overview]. Image available from:
 
-* [**Docker Hub**](https://hub.docker.com/r/zulip/docker-zulip) (`docker pull zulip/docker-zulip:3.2-0`)
+* [**Docker Hub**](https://hub.docker.com/r/zulip/docker-zulip) (`docker pull zulip/docker-zulip:3.4-0`)
 
-Current Zulip version: `3.2`
-Current Docker image version: `3.2-0`
+Current Zulip version: `3.4`
+Current Docker image version: `3.4-0`
 
 Project status: **Alpha**.  While this project works and is
 used by many sites in production, configuring is substantially more
@@ -190,6 +190,13 @@ which you need to encode in the YAML file.  For example,
 * For `AUTHENTICATION_BACKENDS`, you enter `ZULIP_AUTH_BACKENDS` as a
   comma-separated list of the backend names
   (E.g. `"EmailAuthBackend,GitHubAuthBackend"`).
+
+**Reducing RAM usage**. By default, the Zulip server automatically detect
+whether the system has enough memory to run Zulip queue processors in the
+higher-throughput but more multiprocess mode (or to save 1.5GiB of RAM with
+the multithreaded mode). This algorithm might see the host's memory, not the
+docker container's memory. Set to `QUEUE_WORKERS_MULTIPROCESS` to `true` or
+`false` to override the automatic calculation.
 
 **SSL Certificates**.  By default, the image will generate a self-signed cert.
 You can set `SSL_CERTIFICATE_GENERATION: "certbot"` within `docker-compose.yml`
