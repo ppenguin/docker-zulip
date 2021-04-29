@@ -12,10 +12,10 @@ trap finish EXIT
 
 REPO="1nnoserv:15000/zulip"
 IMGNAME="docker-zulip"
-IMGTAGS="3.2-ppenguin"
+IMGTAGS="3.4-ppenguin"
 
 BIMGNAME="zulip-builder"
-BASEIMG="ubuntu:18.04"
+BASEIMG="ubuntu:20.04"
 
 BUILD=${THIS}/.build
 DEBAR=${THIS}/.apt-archives
@@ -44,7 +44,7 @@ stage1() {
     buildah config \
         --env LANG="C.UTF-8" \
         --env ZULIP_GIT_URL="https://github.com/zulip/zulip.git" \
-        --env ZULIP_GIT_REF=3.2 \
+        --env ZULIP_GIT_REF=3.4 \
         --env CUSTOM_CA_CERTIFICATES="" \
         ${C}
 
